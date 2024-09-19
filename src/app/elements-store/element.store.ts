@@ -18,7 +18,9 @@ export interface ElementsStoreState {
   isDataFetched: boolean;
 }
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export default class ElementsStore {
   private state = rxState<ElementsStoreState>(({ set, connect }) => {
     set({ periodics: [], isDataFetched: false });
