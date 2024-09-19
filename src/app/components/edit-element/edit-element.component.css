@@ -1,0 +1,18 @@
+.edit-form {
+  height: 100%;
+  padding: 20px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.form-inputs {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-buttons {
+  margin-top: auto;
+  display: flex;
+  justify-content: space-between;
+}

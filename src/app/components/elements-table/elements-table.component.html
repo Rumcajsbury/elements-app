@@ -1,0 +1,7 @@
+<app-table
+  [dataSource]="dataSource()"
+  [displayedColumns]="displayedColumns()"
+  [columnLabels]="columnLabels()"
+  rowTooltip="Click to edit element."
+  (rowClicked)="editElement($event)"
+></app-table>
