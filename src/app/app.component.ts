@@ -11,7 +11,12 @@ import { FilterInput } from './components/common/filter-input/filter-input.compo
 import { LoadingSpinnerComponent } from './components/common/loading-spinner/loading-spinner.component';
 import { ElementsTableComponent } from './components/elements-table/elements-table.component';
 import PeriodicElement from './models/PeriodicElement';
+import {
+  setIsDataFetchedAction$,
+  setPeriodicsAction$,
+} from './elements-store/elements.actions';
 import { PeriodicsService } from './services/periodics.service';
+import ElementsStore from './elements-store/element.store';
 
 @Component({
   selector: 'app-root',
@@ -23,8 +28,12 @@ import { PeriodicsService } from './services/periodics.service';
 })
 export class AppComponent implements OnInit {
   private periodicsService = inject(PeriodicsService);
+  private elementsStore = inject(ElementsStore);
+
+  elementsList: Signal<PeriodicElement[]> = this.elementsStore.periodicElements;
+  isDataAvaiable: Signal<boolean> = this.elementsStore.isDataFetched;
+
   private filterValue = signal<string>('');
-  elementsList: Signal<PeriodicElement[]> = this.periodicsService.periodics;
   displayedElementsList = computed(() => {
     const elementsToDisplay = [...this.elementsList()].sort(
       (a, b) => a.position - b.position
@@ -38,10 +47,13 @@ export class AppComponent implements OnInit {
 
     return filteredElements;
   });
-  isDataAvaiable: Signal<boolean> = this.periodicsService.isDataAvaiable;
 
   ngOnInit(): void {
-    this.periodicsService.fetchData();
+    setIsDataFetchedAction$.next(false);
+    this.periodicsService.fetchData().subscribe((data) => {
+      setPeriodicsAction$.next(data);
+      setIsDataFetchedAction$.next(true);
+    });
   }
 
   handleFilterChange(value: string) {

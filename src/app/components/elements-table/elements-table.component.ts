@@ -3,7 +3,6 @@ import {
   Component,
   inject,
   input,
-  OnInit,
   signal,
 } from '@angular/core';
 import { TableComponent } from '../common/table/table.component';
@@ -12,7 +11,7 @@ import PeriodicElement from '../../models/PeriodicElement';
 import StringMap from '../../models/StringMap';
 import { MatDialog } from '@angular/material/dialog';
 import { EditElementComponent } from '../edit-element/edit-element.component';
-import { PeriodicsService } from '../../services/periodics.service';
+import { updatePeriodicAction$ } from '../../elements-store/elements.actions';
 
 @Component({
   selector: 'app-elements-table',
@@ -24,7 +23,6 @@ import { PeriodicsService } from '../../services/periodics.service';
 })
 export class ElementsTableComponent {
   dataSource = input<PeriodicElement[]>([]);
-  periodicsService = inject(PeriodicsService);
   displayedColumns = signal<string[]>(['position', 'name', 'weight', 'symbol']);
   columnLabels = signal<StringMap>({
     position: 'Number',
@@ -42,10 +40,13 @@ export class ElementsTableComponent {
       data: { ...element },
     });
 
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        const previouseElementPosition = element.position;
-        this.periodicsService.updateElement(previouseElementPosition, result);
+    dialogRef.afterClosed().subscribe((newElementData) => {
+      if (newElementData) {
+        const elementPosition = element.position;
+        updatePeriodicAction$.next({
+          elementPosition,
+          newElementData,
+        });
       }
     });
   }
